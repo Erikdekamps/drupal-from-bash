@@ -5,27 +5,27 @@
 rm -rf docker
 
 # Create the docker directories.
-mkdir -p ./docker/{conf,database,proxy,scripts,web}
+mkdir -p ./docker/{conf,database,proxy,web}
 
 # Read the user input.
-echo "Type the site name, followed by [ENTER]:"
-read site_name
+echo "Type the domain prefix, followed by [ENTER]:"
+read DOMAIN
+
+################################################################################
+# conf/[DOMAIN].conf
+################################################################################
 
 # Create the config file.
-touch ./docker/conf/${site_name}.conf
-
-################################################################################
-# conf/[SITE_NAME].conf
-################################################################################
+touch ./docker/conf/${DOMAIN}.conf
 
 # Write the contents to the conf file.
-cat > ./docker/conf/${site_name}.conf <<EOL
+cat > ./docker/conf/${DOMAIN}.conf <<EOL
 [req]
 distinguished_name = req_distinguished_name
 req_extensions = v3_req
 
 [req_distinguished_name]
-commonName = ${site_name}.localhost
+commonName = ${DOMAIN}.localhost
 
 [ v3_req ]
 # Extensions to add to a certificate request
@@ -34,7 +34,7 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = ${site_name}.localhost
+DNS.1 = ${DOMAIN}.localhost
 EOL
 
 ################################################################################
@@ -66,7 +66,7 @@ EOL
 touch ./docker/proxy/nginx.conf
 
 # Write to the file.
-cat > ./docker/proxy/nginx.conf <<EOL
+cat > ./docker/proxy/nginx.conf <<EOF
 user  nginx;
 worker_processes  1;
 
@@ -88,9 +88,9 @@ http {
   send_timeout                600;
   client_max_body_size        512M;
 
-  log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-  '$status $body_bytes_sent "$http_referer" '
-  '"$http_user_agent" "$http_x_forwarded_for"';
+  log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
+  '\$status \$body_bytes_sent "\$http_referer" '
+  '"\$http_user_agent" "\$http_x_forwarded_for"';
 
   access_log  /var/log/nginx/access.log  main;
 
@@ -100,25 +100,25 @@ http {
   keepalive_timeout  65;
 
   server {
-    # Change '${site_name}.localhost' to 'localhost' for local SW development
-    set $domain '${site_name}.localhost';
+    # Change '${DOMAIN}.localhost' to 'localhost' for local SW development
+    set \$domain '${DOMAIN}.localhost';
     listen 80;
     listen [::]:80;
     location / {
       proxy_pass http://apache:80;
-      proxy_set_header Host $domain;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Host $host:80;
+      proxy_set_header Host \$domain;
+      proxy_set_header X-Real-IP \$remote_addr;
+      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Host \$host:80;
       proxy_set_header X-Forwarded-Port 80;
-      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Proto \$scheme;
       proxy_set_header X-Url-Scheme: http;
       fastcgi_read_timeout 300;
     }
   }
 
   server {
-    set $domain '${site_name}.localhost';
+    set \$domain '${DOMAIN}.localhost';
     listen 443 ssl;
 
     ssl_certificate /usr/share/ssl/cert.crt;
@@ -126,25 +126,33 @@ http {
 
     location / {
       proxy_pass http://apache:80;
-      proxy_set_header Host $domain;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Host $host:443;
+      proxy_set_header Host \$domain;
+      proxy_set_header X-Real-IP \$remote_addr;
+      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Host \$host:443;
       proxy_set_header X-Forwarded-Port 443;
-      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Proto \$scheme;
       proxy_set_header X-Url-Scheme: http;
       fastcgi_read_timeout 300;
     }
   }
 }
-EOL
+EOF
+
+################################################################################
+# Certificates.
+################################################################################
+
+# Set host file location.
+hosts=/etc/hosts
+
+echo "# ${DOMAIN}.localhost" >> $hosts
+echo "127.0.0.1 ${DOMAIN}.localhost" >> $hosts
+
 
 ################################################################################
 # docker/web
 ################################################################################
-
-# Create the script for adding to hosts file.
-touch ./docker/scripts/add-to-hosts-file.sh
 
 # Create the web files.
 touch ./docker/web/development.services.yml
