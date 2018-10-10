@@ -4,22 +4,32 @@
 # !) Temp.
 rm -rf docker
 
-# Create the docker directories.
-mkdir -p ./docker/{conf,database,proxy,web}
-
 # Read the user input.
 echo "Type the domain prefix, followed by [ENTER]:"
 read DOMAIN
+
+################################################################################
+# Create the project with composer.
+################################################################################
+#composer create-project drupal-composer/drupal-project:8.x-dev ${DOMAIN}.localhost --stability dev --no-interaction
+
+# Create the directory.
+mkdir ${DOMAIN}.localhost
+
+# Create the docker directories.
+echo "Creating the docker directories ..."
+mkdir -p ${DOMAIN}.localhost/docker/{conf,database,proxy,web}
 
 ################################################################################
 # conf/[DOMAIN].conf
 ################################################################################
 
 # Create the config file.
-touch ./docker/conf/${DOMAIN}.conf
+echo "Creating /docker/conf/${DOMAIN}.conf ..."
+touch ${DOMAIN}.localhost/docker/conf/${DOMAIN}.conf
 
 # Write the contents to the conf file.
-cat > ./docker/conf/${DOMAIN}.conf <<EOL
+cat > ${DOMAIN}.localhost/docker/conf/${DOMAIN}.conf <<EOL
 [req]
 distinguished_name = req_distinguished_name
 req_extensions = v3_req
@@ -42,10 +52,11 @@ EOL
 ################################################################################
 
 # Create the database file.
-touch ./docker/database/mysqld.cnf
+echo "Creating /docker/database/mysqld.cnf ..."
+touch ${DOMAIN}.localhost/docker/database/mysqld.cnf
 
 # Write to the mysqld.cnf.
-cat > ./docker/database/mysqld.cnf <<EOL
+cat > ${DOMAIN}.localhost/docker/database/mysqld.cnf <<EOL
 [mysqld]
 max_allowed_packet = 2G
 innodb_data_file_path = ibdata1:10M:autoextend
@@ -63,10 +74,11 @@ EOL
 ################################################################################
 
 # Create the nginx file.
-touch ./docker/proxy/nginx.conf
+echo "Creating /docker/proxy/nginx.conf ..."
+touch ${DOMAIN}.localhost/docker/proxy/nginx.conf
 
 # Write to the file.
-cat > ./docker/proxy/nginx.conf <<EOF
+cat > ${DOMAIN}.localhost/docker/proxy/nginx.conf <<EOF
 user  nginx;
 worker_processes  1;
 
@@ -140,23 +152,30 @@ http {
 EOF
 
 ################################################################################
+# Host file. (Sudo?)
+################################################################################
+
+# echo "Adding domain to /etc/hosts file ..."
+
+# Set host file location.
+# hosts=/etc/hosts
+
+# sudo echo "# ${DOMAIN}.localhost" >> $hosts
+# echo "127.0.0.1 ${DOMAIN}.localhost" >> $hosts
+
+################################################################################
 # Certificates.
 ################################################################################
 
-# Set host file location.
-hosts=/etc/hosts
-
-echo "# ${DOMAIN}.localhost" >> $hosts
-echo "127.0.0.1 ${DOMAIN}.localhost" >> $hosts
-
+# echo "Creating self signed certificate (todo) ..."
 
 ################################################################################
 # docker/web
 ################################################################################
 
 # Create the web files.
-touch ./docker/web/development.services.yml
-touch ./docker/web/php.ini-dev
-touch ./docker/web/settings.dev.php
-touch ./docker/web/settings.live.php
-touch ./docker/web/settings.local.php
+touch ${DOMAIN}.localhost/docker/web/development.services.yml
+touch ${DOMAIN}.localhost/docker/web/php.ini-dev
+touch ${DOMAIN}.localhost/docker/web/settings.dev.php
+touch ${DOMAIN}.localhost/docker/web/settings.live.php
+touch ${DOMAIN}.localhost/docker/web/settings.local.php
