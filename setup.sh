@@ -11,10 +11,8 @@ read DOMAIN
 ################################################################################
 # Create the project with composer.
 ################################################################################
-#composer create-project drupal-composer/drupal-project:8.x-dev ${DOMAIN}.localhost --stability dev --no-interaction
-
-# Create the directory.
-mkdir ${DOMAIN}.localhost
+echo "Creating composer project, please wait ..."
+composer create-project drupal-composer/drupal-project:8.x-dev ${DOMAIN}.localhost --stability dev --no-interaction
 
 # Create the docker directories.
 echo "Creating the docker directories ..."
@@ -150,22 +148,6 @@ http {
   }
 }
 EOF
-
-################################################################################
-# Host file. (Sudo?)
-################################################################################
-
-# echo "Adding domain to /etc/hosts file ..."
-
-# Set host file location.
-# hosts=/etc/hosts
-
-# sudo echo "# ${DOMAIN}.localhost" >> $hosts
-# echo "127.0.0.1 ${DOMAIN}.localhost" >> $hosts
-
-################################################################################
-# Certificates.
-################################################################################
 
 # echo "Creating self signed certificate (todo) ..."
 
