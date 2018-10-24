@@ -1,14 +1,12 @@
 #!/bin/sh
 # This script will do stuff.
 
-# !) Temp.
-rm -rf docker
-
 # Read the user input.
 echo "Type the domain prefix, followed by [ENTER]:"
 read DOMAIN
 
 # Write the domain to the .env file.
+rm -rf .env
 echo "DOMAIN=${DOMAIN}" >> .env
 
 ################################################################################
@@ -22,32 +20,23 @@ composer create-project drupal-composer/drupal-project:8.x-dev ${DOMAIN}.localho
 echo "Creating the docker directories ..."
 mkdir -p ${DOMAIN}.localhost/docker/{conf,database,proxy,web}
 
-################################################################################
-# conf/[DOMAIN].conf
-################################################################################
-
+# Create the [DOMAIN].localhost/docker/conf/[DOMAIN].conf file.
 source ./bash-includes/docker-conf.sh
 
-################################################################################
-# database/mysqld.cnf
-################################################################################
-
+# Create the [DOMAIN].localhost/docker/database/mysqld.cnf file.
 source ./bash-includes/database-mysql.sh
 
-################################################################################
-# docker/proxy/nginx.conf
-################################################################################
-
+# Create the [DOMAIN].localhost/docker/proxy/nginx.conf file.
 source ./bash-includes/docker-proxy.sh
 
-################################################################################
-# docker/web/development.services.yml
-################################################################################
-
+# Create the [DOMAIN].localhost/docker/web/development.services.yml file.
 source ./bash-includes/development-services.sh
 
-# Create other files. TODO:
-touch ${DOMAIN}.localhost/docker/web/php.ini-dev
-touch ${DOMAIN}.localhost/docker/web/settings.dev.php
-touch ${DOMAIN}.localhost/docker/web/settings.live.php
-touch ${DOMAIN}.localhost/docker/web/settings.local.php
+# Create the [DOMAIN].localhost/config directory.
+source ./bash-includes/drupal-config.sh
+
+################################################################################
+# composer install (WIP).
+################################################################################
+
+#composer install
