@@ -5,19 +5,23 @@
 echo "Type the domain prefix, followed by [ENTER]:"
 read DOMAIN
 
-# Write the domain to the .env file.
-rm -rf .env
+# Make sure there's no env file yet.
+rm -rf ${DOMAIN}.localhost/.env
+
+# Make sure there's no docker-compose file yet.
+rm -rf ${DOMAIN}.localhost/docker-compose.yml
+
+# Fill the .env file.
 echo "DOMAIN=${DOMAIN}" >> .env
+#echo "DOMAIN=${DOMAIN}" >> ${DOMAIN}.localhost/.env
 
-################################################################################
+# Write the domain to the .env file.
+source ./bash-includes/env.sh
+
 # Create the project with composer.
-################################################################################
-
-echo "Creating composer project, please wait ..."
 composer create-project drupal-composer/drupal-project:8.x-dev ${DOMAIN}.localhost --stability dev --no-interaction
 
 # Create the docker directories.
-echo "Creating the docker directories ..."
 mkdir -p ${DOMAIN}.localhost/docker/{conf,database,proxy,web}
 
 # Create the [DOMAIN].localhost/docker/conf/[DOMAIN].conf file.
@@ -35,8 +39,16 @@ source ./bash-includes/development-services.sh
 # Create the [DOMAIN].localhost/config directory.
 source ./bash-includes/drupal-config.sh
 
-################################################################################
-# composer install (WIP).
-################################################################################
+# Create the [DOMAIN].localhost/docker-compose.yml file.
+source ./bash-includes/docker-compose.sh
 
+# Generate an SSL certificate.
+#source ./bash-includes/ssl-certificate.sh
+
+# Todo:
+# - create documentation (docs/hosts.md / docs/https.md)
+# - write to domain gitignore (docker/stuff).
+
+# Install with composer
+#cd ${DOMAIN}.localhost
 #composer install
