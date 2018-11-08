@@ -32,6 +32,12 @@ source ./bash-includes/docker-proxy.sh
 # Create the [DOMAIN].localhost/docker/web/development.services.yml file.
 source ./bash-includes/development-services.sh
 
+# Create the [DOMAIN].localhost/docker/web/settings.local.php file.
+source ./bash-includes/local-settings.sh
+
+# Create the [DOMAIN].localhost/docker/web/settings.local.php file.
+source ./bash-includes/php-ini.sh
+
 # Create the [DOMAIN].localhost/config directory.
 source ./bash-includes/drupal-config.sh
 
@@ -40,7 +46,3 @@ source ./bash-includes/docker-compose.sh
 
 # Generate an SSL certificate.
 source ./bash-includes/ssl-certificate.sh
-
-# Install with composer
-#cd ${DOMAIN}.localhost
-#composer install
