@@ -6,20 +6,16 @@ echo "Type the domain prefix, followed by [ENTER]:"
 read DOMAIN
 
 # Make sure there's no env file yet.
-rm -rf ${DOMAIN}.localhost/.env
-
-# Make sure there's no docker-compose file yet.
-rm -rf ${DOMAIN}.localhost/docker-compose.yml
+rm -rf .env
 
 # Fill the .env file.
 echo "DOMAIN=${DOMAIN}" >> .env
-#echo "DOMAIN=${DOMAIN}" >> ${DOMAIN}.localhost/.env
-
-# Write the domain to the .env file.
-source ./bash-includes/env.sh
 
 # Create the project with composer.
 composer create-project drupal-composer/drupal-project:8.x-dev ${DOMAIN}.localhost --stability dev --no-interaction
+
+# Write the domain to the .env file.
+source ./bash-includes/env.sh
 
 # Create the docker directories.
 mkdir -p ${DOMAIN}.localhost/docker/{conf,database,proxy,web}
@@ -43,7 +39,7 @@ source ./bash-includes/drupal-config.sh
 source ./bash-includes/docker-compose.sh
 
 # Generate an SSL certificate.
-#source ./bash-includes/ssl-certificate.sh
+source ./bash-includes/ssl-certificate.sh
 
 # Todo:
 # - create documentation (docs/hosts.md / docs/https.md)

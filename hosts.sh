@@ -2,9 +2,8 @@
 # This script will do stuff.
 # !) Must be ran as root.
 
-# Read the user input.
-echo "Type the domain prefix, followed by [ENTER]:"
-read DOMAIN
+# Load environment variables
+. .env > /dev/null
 
 ################################################################################
 # Host file.
