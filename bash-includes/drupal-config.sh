@@ -5,8 +5,8 @@
 . .env > /dev/null
 
 # Create the database file.
-mkdir -p ${DOMAIN}.localhost/config
-touch ${DOMAIN}.localhost/config/.htaccess
+mkdir -p ${DOMAIN}.localhost/config/sync
+touch ${DOMAIN}.localhost/config/sync/.htaccess
 
 # Write to the mysqld.cnf.
 cat > ${DOMAIN}.localhost/config/.htaccess <<EOL

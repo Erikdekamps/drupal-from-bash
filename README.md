@@ -12,6 +12,8 @@ Add the domain to your host file:
 $ sudo sh hosts.sh
 ```
 
+Place database in docker/database.
+
 ### Todo:
 
 ```
