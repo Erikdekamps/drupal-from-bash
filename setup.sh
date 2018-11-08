@@ -41,10 +41,6 @@ source ./bash-includes/docker-compose.sh
 # Generate an SSL certificate.
 source ./bash-includes/ssl-certificate.sh
 
-# Todo:
-# - create documentation (docs/hosts.md / docs/https.md)
-# - write to domain gitignore (docker/stuff).
-
 # Install with composer
 #cd ${DOMAIN}.localhost
 #composer install
