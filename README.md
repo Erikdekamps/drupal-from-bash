@@ -17,7 +17,6 @@ Place database in docker/database.
 ### Todo:
 
 ```
-- Create docker/web/settings.local.php file
 - Create the documentation
 - Modify the gitignore
 - Install via composer
